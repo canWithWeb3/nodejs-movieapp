@@ -1,0 +1,102 @@
+<%- include('../partials/html-start.ejs') %>
+<%- include('../partials/header.ejs') %>
+
+<div class="container my-5">
+  <div class="col-md-5 mx-auto">
+    <div class="card">
+      <div class="card-header">Giriş yap</div>
+      <div class="card-body">
+        <div style="display: none;" id="loginFormAlert" class="alert alert-danger"></div>
+
+        <form id="login_form" method="POST">
+          <!-- email input -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="text" name="email" id="email" class="form-control">
+            <span id="email_err" class="text-danger"></span>
+          </div>
+          
+          <!-- password input -->
+          <div class="mb-3">
+            <label for="password" class="form-label">Parola:</label>
+            <input type="password" name="password" id="password" class="form-control">
+            <span id="password_err" class="text-danger"></span>
+          </div>
+          
+          <button type="submit" id="login_btn" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  const checkLoginForm = () => {
+    const email = document.getElementById("email").value.trim()
+    const password = document.getElementById("password").value.trim()
+
+    let email_err = document.getElementById("email_err")
+    let password_err = document.getElementById("password_err")
+
+    email_err.textContent = password_err.textContent = "";
+
+    const mailformat = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+    if(!email){
+      email_err.textContent = "Email boş geçilemez."
+    }else if(!email.match(mailformat)){
+      email_err.textContent = "Email biçiminde değil."
+    }
+
+    if(!password){
+      password_err.textContent = "Parola boş geçilemez."
+    }
+
+    if(!email_err.textContent && !password_err.textContent){
+      return true
+    }
+
+    return false
+  }
+
+  const login_btn = document.getElementById("login_btn")
+  const login_form = document.getElementById("login_form")
+  login_form.addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    login_btn.disabled = true
+    if(checkLoginForm()){
+      const loginFormAlert = document.getElementById("loginFormAlert")
+      loginFormAlert.style.display = "none"
+
+      try{
+        const email = document.getElementById("email").value.trim()
+        const password = document.getElementById("password").value.trim()
+
+        const res = await fetch("login", {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+          headers: { "Content-Type" : "application/json" }
+        })
+
+        const data = await res.json()
+
+        if(data === true){
+          window.location.href = "/"
+        }
+
+        if(data && Object.getOwnPropertyNames(data).length !== 0){
+          if(data.error){
+            loginFormAlert.style.display = "block"
+            loginFormAlert.textContent = data.error
+          }
+        }
+      }catch(err){
+        console.log(err)
+      }
+    }
+    
+    login_btn.disabled = false
+  })
+</script>
+
+<%- include('../partials/html-finish.ejs') %>

@@ -1,0 +1,126 @@
+<%- include('../partials/html-start.ejs') %>
+<%- include('../partials/header.ejs') %>
+
+<div class="container my-5">
+  <div class="col-md-5 mx-auto">
+    <div class="card">
+      <div class="card-header">Kayıt ol</div>
+      <div class="card-body">
+        <form id="register_form" method="POST">
+          <!-- username input -->
+          <div class="mb-3">
+            <label for="username" class="form-label">Kullanıcı adı:</label>
+            <input type="text" name="username" id="username" class="form-control">
+            <span id="username_err" class="text-danger"></span>
+          </div>
+          
+          <!-- email input -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="text" name="email" id="email" class="form-control">
+            <span id="email_err" class="text-danger"></span>
+          </div>
+          
+          <!-- password input -->
+          <div class="mb-3">
+            <label for="password" class="form-label">Parola:</label>
+            <input type="password" name="password" id="password" class="form-control">
+            <span id="password_err" class="text-danger"></span>
+          </div>
+          
+          <!-- repassword input -->
+          <div class="mb-3">
+            <label for="repassword" class="form-label">Parola (Tekrar):</label>
+            <input type="password" name="repassword" id="repassword" class="form-control">
+            <span id="repassword_err" class="text-danger"></span>
+          </div>
+
+          <button type="submit" id="register_btn" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  const checkRegisterForm = () => {
+    const username = document.getElementById("username").value.trim()
+    const email = document.getElementById("email").value.trim()
+    const password = document.getElementById("password").value.trim()
+    const repassword = document.getElementById("repassword").value.trim()
+
+    let username_err = document.getElementById("username_err")
+    let email_err = document.getElementById("email_err")
+    let password_err = document.getElementById("password_err")
+
+    username_err.textContent = email_err.textContent = password_err.textContent = "";
+
+    if(!username){
+      username_err.textContent = "Kullanıcı adı boş geçilemez."
+    }
+
+    const mailformat = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+    if(!email){
+      email_err.textContent = "Email boş geçilemez."
+    }else if(!email.match(mailformat)){
+      email_err.textContent = "Email biçiminde değil."
+    }
+
+    if(!password){
+      password_err.textContent = "Parola boş geçilemez."
+    }else if(password !== repassword){
+      password_err.textContent = "Parolalar uyuşmuyor."
+    }
+
+    if(!username_err.textContent && !email_err.textContent && !password_err.textContent){
+      return true
+    }
+
+    return false
+  }
+
+  const register_btn = document.getElementById("register_btn")
+  const register_form = document.getElementById("register_form")
+  register_form.addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    register_btn.disabled = true
+    if(checkRegisterForm()){
+      try{
+        const username = document.getElementById("username").value.trim()
+        const email = document.getElementById("email").value.trim()
+        const password = document.getElementById("password").value.trim()
+
+        const res = await fetch("register", {
+          method: "POST",
+          body: JSON.stringify({ username, email, password }),
+          headers: { "Content-Type" : "application/json" }
+        })
+
+        const data = await res.json()
+
+        if(data === true){
+          window.location.href = "/login"
+        }
+
+        if(data && Object.getOwnPropertyNames(data).length !== 0){
+          if(data.username){
+            username_err.textContent = data.username
+          }
+          if(data.email){
+            email_err.textContent = data.email
+          }
+          if(data.password){
+            password_err.textContent = data.password
+          }
+        }
+      }catch(err){
+        console.log(err)
+      }
+    }
+    
+    register_btn.disabled = false
+  })
+</script>
+
+<%- include('../partials/html-finish.ejs') %>

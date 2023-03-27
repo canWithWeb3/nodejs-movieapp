@@ -1,0 +1,14 @@
+.th-2{
+  width: 140px;
+}
+
+html{
+  font-size: 106%;
+}
+
+.card-header{
+  background-color: gray;
+  color: white;
+  font-size: 18px;
+  padding: 10px 14px;
+}

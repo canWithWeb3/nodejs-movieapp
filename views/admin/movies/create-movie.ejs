@@ -1,0 +1,84 @@
+<%- include('../../partials/admin-start.ejs') %>
+
+<h1 class="h2 mb-3">Film Ekle</h1>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form id="createMovieForm">
+          <div class="row">
+            <div class="col-lg-9">
+              <!-- image input -->
+              <div class="mb-3">
+                <label for="image" class="form-label">Resim:</label>
+                <input type="file" name="image" id="image" class="form-control">
+                <span id="image_err" class="text-danger"></span>
+              </div>
+
+              <!-- name input -->
+              <div class="mb-3">
+                <label for="name" class="form-label">Adı:</label>
+                <input type="text" name="name" id="name" class="form-control">
+                <span id="name_err" class="text-danger"></span>
+              </div>
+
+              <!-- description input -->
+              <div class="mb-3">
+                <label for="description" class="form-label">Açıklama:</label>
+                <textarea name="" id="" rows="3" class="form-control"></textarea>
+                <span id="description_err" class="text-danger"></span>
+              </div>
+            </div>
+
+            <div class="col-lg-3">
+              <div class="card">
+                <div class="card-header">Kategoriler</div>
+                <div class="card-body">
+                  <% categories.forEach(c => { %>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="<%= c._id %>" id="category_<%= c._id %>">
+                      <label class="form-check-label" for="category_<%= c._id %>">
+                        <%= c.name %>
+                      </label>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="create_btn" class="btn btn-primary">Ekle</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  const checkCreateMovieForm = () => {
+    const name = document.getElementById("name").value.trim()
+
+    const name_err = document.getElementById("name_err")
+
+    name_err.textContent = "";
+
+    if(!name){
+      name_err.textContent = "Adı boş geçilemez.";
+    }
+
+    if(!name_err.textContent){
+      return true
+    }
+  }
+
+  const createMovieForm = document.getElementById("createMovieForm")
+  createMovieForm.addEventListener("submit", async(e) => {
+    e.preventDefault();
+    const image = document.getElementById("image")
+
+    console.log(image)
+  })
+</script>
+
+<%- include('../../partials/admin-finish.ejs') %>
